@@ -71,7 +71,7 @@ HTML_TEMPLATE = """
         <div class="response">{{ response }}</div>
     {% endif %}
     <script>
-        const socket = io();
+        const socket = io("https://smg.bright.hackclub.app");
         const button = document.getElementById("mic-button");
         const promptInput = document.getElementById("prompt");
         const form = document.getElementById("voice-form");
