@@ -4,5 +4,4 @@ jsonlib-python3
 pywemo
 google-genai
 python-dotenv
-os
 logging
