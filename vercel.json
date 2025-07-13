@@ -1,5 +1,9 @@
 {
-    "rewrites": [
-      { "source": "/(.*)", "destination": "/api/main" }
+    "runtime": "python3.11",
+    "builds": [
+      { "src": "api/main.py", "use": "@vercel/python" }
+    ],
+    "routes": [
+      { "src": "/(.*)", "dest": "api/main.py" }
     ]
   }
