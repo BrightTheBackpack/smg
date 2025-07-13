@@ -188,6 +188,7 @@ def server():
 def trigger():
     app.logger.info("Trigger endpoint called")
     socketio.emit("start_recording", {"message": "triggered"})
+    return jsonify({"message": "triggered"})
 
 
 @app.route("/get_response", methods=["GET"])
