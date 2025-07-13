@@ -1,14 +1,11 @@
 {
-    "builds": [
-      {
-        "src": "api/main.py",
-        "use": "@vercel/python",
-        "config": {
-          "pythonVersion": "3.9"
-        }
-      }
-    ],
-    "rewrites": [
-      { "source": "/(.*)", "destination": "/api/main" }
-    ]
-  }
+  "builds": [
+    {
+      "src": "api/main.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/api/main" }
+  ]
+}
