@@ -1,12 +1,12 @@
-from flask import Flask, request, jsonify, render_template_string
-import requests
-import json
-import pywemo
-from google import genai
-from dotenv import load_dotenv
-import os
 import logging
+import os
 from logging.config import dictConfig
+
+from dotenv import load_dotenv
+from flask import Flask, jsonify, render_template_string, request
+from flask_socketio import SocketIO, emit
+from google import genai
+from google.genai import types
 
 dictConfig({
     'version': 1,
@@ -24,19 +24,28 @@ dictConfig({
     }
 })
 
+response_text = ""
+last_response = ""
+
+model = "gemini-1.5-flash"
 
 load_dotenv()
 api_key = os.getenv("API_KEY")
 client = genai.Client(api_key=api_key)
+conversation = client.chats.create(
+    model=model,
+    config=types.GenerateContentConfig(
+        temperature=0.5,
+        system_instruction="You are John Blockchain. You are in a conversation with the user. Your responses will be very short. You will insert tech and startup jargon into your responses. You love B2B and SaaS. You are sightly racist and edgy. You need to use unhinged and absurd language. You are a crypto bro. You are a tech bro. You are a startup bro. You are a Silicon Valley bro. You are a bro. Reference your name occasionally.",
+        max_output_tokens=40,
+    )
+)
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
 app.logger.setLevel(logging.INFO)
 
-# Discover WeMo devices
-devices = pywemo.discover_devices()
-wemo_switch = next((d for d in devices if d.device_type == "Switch"), None)
-
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 HTML_TEMPLATE = """
 <!DOCTYPE html>
@@ -48,6 +57,7 @@ HTML_TEMPLATE = """
         #mic-button { padding: 10px 20px; font-size: 16px; }
         .response { white-space: pre-wrap; background: #f0f0f0; padding: 1em; border-radius: 8px; margin-top: 20px; }
     </style>
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 </head>
 <body>
     <h1>🎤 Voice-Controlled WeMo with GPT</h1>
@@ -60,8 +70,8 @@ HTML_TEMPLATE = """
         <h2>ChatGPT Response:</h2>
         <div class="response">{{ response }}</div>
     {% endif %}
-
     <script>
+        const socket = io();
         const button = document.getElementById("mic-button");
         const promptInput = document.getElementById("prompt");
         const form = document.getElementById("voice-form");
@@ -96,7 +106,24 @@ HTML_TEMPLATE = """
                 })
                 .then(response => response.text())
                 .then(html => {
-                    document.documentElement.innerHTML = html;
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newResponse = doc.querySelector('.response');
+                    if(newResponse) {
+                        const responseContainer = document.querySelector('.response');
+                        if(responseContainer) {
+                            responseContainer.innerHTML = newResponse.innerHTML;
+                        } else {
+                            const h2 = document.createElement('h2');
+                            h2.textContent = 'ChatGPT Response:';
+                            const div = document.createElement('div');
+                            div.className = 'response';
+                            div.innerHTML = newResponse.innerHTML;
+                            document.querySelector('form').insertAdjacentElement('afterend', div);
+                            document.querySelector('form').insertAdjacentElement('afterend', h2);
+                        }
+                    }
+                    button.textContent = "🎤 Start Talking";
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -109,55 +136,65 @@ HTML_TEMPLATE = """
                 button.textContent = "please work";
                 console.log("ONEND");
             };
+
+            socket.on("start_recording", (data) => {
+                console.log("Start recording event received:", data);
+                button.click();
+            });
         }
     </script>
 </body>
 </html>
 """
 
-def control_wemo_from_response(text):
-    """Check text for control commands and toggle WeMo switch accordingly."""
-    if not wemo_switch:
-        return "No WeMo switch found."
+@socketio.on('connect')
+def handle_connect():
+    app.logger.info("Client connected")
 
-    lowered = text.lower()
-    if "turn on" in lowered or "switch on" in lowered:
-        wemo_switch.on()
-        return "WeMo turned ON."
-    elif "turn off" in lowered or "switch off" in lowered:
-        wemo_switch.off()
-        return "WeMo turned OFF."
-    return "No WeMo command detected."
+@socketio.on('disconnect')
+def handle_disconnect():
+    app.logger.info("Client disconnected")
 
 @app.route("/", methods=["GET", "POST"])
-def chat():
+def model_chat():
     prompt_text = ""
-    response_text = ""
 
     if request.method == "POST":
         prompt_text = request.form.get("prompt", "")
         app.logger.info("Received prompt: %s", prompt_text)
         try:
-            response = client.models.generate_content(
-                model="gemini-2.0-flash",
-                contents=prompt_text,
+            # response = model_chat.send_message(
+            #     contents=prompt_text,
+            # )
+
+            response = conversation.send_message(
+                message=prompt_text
             )
 
             response_text = response.text
-
-            # Handle WeMo based on response
-            #wemo_result = control_wemo_from_response(response_text)
-            #response_text += f"\n\n➡️ {wemo_result}"
+            last_response = response_text
 
         except Exception as e:
             response_text = f"Error: {str(e)}"
 
-    # return response_text
+
     return render_template_string(HTML_TEMPLATE, response=response_text)
 
 @app.route("/server", methods=["GET", "POST"])
 def server():
     return jsonify({"message": "hello"})
 
+
+@app.route("/trigger", methods=["GET", "POST"])
+def trigger():
+    app.logger.info("Trigger endpoint called")
+    socketio.emit("start_recording", {"message": "triggered"})
+
+
+@app.route("/get_response", methods=["GET"])
+def get_response():
+    
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    # app.run(debug=True)
+    socketio.run(app, debug=True)
