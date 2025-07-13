@@ -1,6 +1,5 @@
 flask>=2.0
 requests
-jsonlib-python3
 pywemo
 google-genai
 python-dotenv

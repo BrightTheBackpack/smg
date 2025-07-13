@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify, render_template_string
 import requests
-import json
 import pywemo
 from google import genai
 from dotenv import load_dotenv
