@@ -25,9 +25,9 @@ dictConfig({
 })
 
 
-# load_dotenv()
-# api_key = os.getenv("API_KEY")
-# client = genai.Client(api_key=api_key)
+load_dotenv()
+api_key = os.getenv("API_KEY")
+client = genai.Client(api_key=api_key)
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -135,25 +135,15 @@ def chat():
     response_text = ""
 
     if request.method == "POST":
-        app.logger.info("Received POST request")
         prompt_text = request.form.get("prompt", "")
         app.logger.info("Received prompt: %s", prompt_text)
         try:
-            # Send to Hack Club's GPT API
-            url = "https://ai.hackclub.com/chat/completions"
-            headers = {"Content-Type": "application/json"}
-            data = {
-                "messages": [{"role": "user", "content": prompt_text}]
-            }
+            response = client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=prompt_text,
+            )
 
-            # response = client.models.generate_content(
-            #     model="gemini-2.5-flash",
-            #     contents="What is silicon valley?"
-            # )
-
-            res = requests.post(url=url, headers=headers, json=data)
-            res.raise_for_status()
-            response_text = res.json().get("choices", [{}])[0].get("message", {}).get("content", "No response")
+            response_text = response.text
 
             # Handle WeMo based on response
             #wemo_result = control_wemo_from_response(response_text)
