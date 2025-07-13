@@ -25,7 +25,7 @@ dictConfig({
 })
 
 response_text = ""
-last_response = ""
+last_response = "No new response"
 
 model = "gemini-1.5-flash"
 
@@ -157,6 +157,7 @@ def handle_disconnect():
 
 @app.route("/", methods=["GET", "POST"])
 def model_chat():
+    global response_text
     prompt_text = ""
 
     if request.method == "POST":
@@ -172,13 +173,11 @@ def model_chat():
             )
 
             response_text = response.text
-            last_response = response_text
 
         except Exception as e:
             response_text = f"Error: {str(e)}"
-
-
     return render_template_string(HTML_TEMPLATE, response=response_text)
+
 
 @app.route("/server", methods=["GET", "POST"])
 def server():
@@ -193,7 +192,11 @@ def trigger():
 
 @app.route("/get_response", methods=["GET"])
 def get_response():
-    return 5
+    # check for no value
+    global response_text
+    ret = jsonify({"response": response_text})
+    response_text = ""
+    return ret
 
 if __name__ == "__main__":
     # app.run(debug=True)
