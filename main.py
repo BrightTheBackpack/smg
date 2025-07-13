@@ -1,15 +1,29 @@
-from flask import Flask, request, render_template_string
+from flask import Flask, request, jsonify
 import requests
 import json
 import pywemo
+from google import genai
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+api_key = os.getenv("API_KEY")
+client = genai.Client(api_key=api_key)
 
 app = Flask(__name__)
+# client = genai.Client()
 
 # Discover WeMo devices
 devices = pywemo.discover_devices()
 wemo_switch = next((d for d in devices if d.device_type == "Switch"), None)
 
+response = client.models.generate_content(
+    model="gemini-2.5-flash",
+    contents="What is silicon valley?",
 
+)
+
+print(response.text)
 
 HTML_TEMPLATE = """
 <!DOCTYPE html>
@@ -111,7 +125,7 @@ def chat():
 
 @app.route("/server", methods=["GET", "POST"])
 def server():
-    return "hello"
+    return jsonify({"message": "hello"})
 
 if __name__ == "__main__":
     app.run(debug=True)
