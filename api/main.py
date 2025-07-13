@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import os
 import logging
 from logging.config import dictConfig
-
+import sys
 dictConfig({
     'version': 1,
     'formatters': {'default': {
@@ -161,3 +161,7 @@ def server():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+@app.route("/version")
+def version():
+    return f"Python {sys.version}"
