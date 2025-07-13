@@ -5,3 +5,4 @@ pywemo
 google-genai
 python-dotenv
 logging
+gunicorn
