@@ -193,7 +193,7 @@ def trigger():
 
 @app.route("/get_response", methods=["GET"])
 def get_response():
-    
+    return 5
 
 if __name__ == "__main__":
     # app.run(debug=True)

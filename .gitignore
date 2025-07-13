@@ -1,0 +1,5 @@
+.env
+.vercel
+lib
+bin
+lib64
