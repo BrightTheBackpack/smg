@@ -45,7 +45,7 @@ app = Flask(__name__)
 app.config['DEBUG'] = True
 app.logger.setLevel(logging.INFO)
 
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
 HTML_TEMPLATE = """
 <!DOCTYPE html>
@@ -71,7 +71,7 @@ HTML_TEMPLATE = """
         <div class="response">{{ response }}</div>
     {% endif %}
     <script>
-        const socket = io();
+        const socket = io("https://smg.bright.hackclub.app");
         const button = document.getElementById("mic-button");
         const promptInput = document.getElementById("prompt");
         const form = document.getElementById("voice-form");
