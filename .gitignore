@@ -3,3 +3,6 @@ include
 lib
 lib64
 .env
+.venv
+.vercel
+a
