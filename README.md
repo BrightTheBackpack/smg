@@ -22,6 +22,7 @@ Tbh this was more software than hardware. Still fun though.
 | Part                        | Quantity |
 |-----------------------------|----------|
 | Safety Glasses              | 1        |
+| Hot Glue Gun                | 1        |
 | Lolin Esp32 MCU             | 1        |
 | 128x32 0.91" OLED Display   | 1        |
 | Large Push Button           | 1        |
