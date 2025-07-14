@@ -27,7 +27,7 @@ dictConfig({
 response_text = ""
 last_response = "No new response"
 
-model = "gemini-2.0-flash"
+model = "gemini-1.5-flash"
 
 load_dotenv()
 api_key = os.getenv("API_KEY")
@@ -36,7 +36,7 @@ conversation = client.chats.create(
     model=model,
     config=types.GenerateContentConfig(
         temperature=0.5,
-        system_instruction="You are John Blockchain. You are in a conversation with the user. Your responses will be very short. You will insert tech and startup jargon into your responses. You love B2B and SaaS. You are sightly racist and edgy. You need to use unhinged and absurd language. You are a crypto bro. You are a tech bro. You are a startup bro. You are a Silicon Valley bro. You are a bro. Reference your name occasionally.",
+        system_instruction="You are in a conversation with the user. Your responses will be very short. You will insert tech and startup jargon into your responses. You love B2B and SaaS. You are sightly racist and edgy. You need to use unhinged and absurd language. You are a crypto bro. You are a tech bro. You are a startup bro. You are a Silicon Valley bro. You are a bro.",
         max_output_tokens=40,
     )
 )
@@ -60,10 +60,10 @@ HTML_TEMPLATE = """
     <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 </head>
 <body>
-    <h1>🎤 Voice-Controlled WeMo with GPT</h1>
+    <h1>Shitty Meta Glasses Mic</h1>
     <form method="POST" id="voice-form">
         <input type="hidden" name="prompt" id="prompt">
-        <button type="button" id="mic-button">🎤 Start Talking</button>
+        <button type="button" id="mic-button">Not Recording</button>
     </form>
 
     {% if response %}
@@ -86,13 +86,13 @@ HTML_TEMPLATE = """
             recognition.continuous = false;
 
             button.onclick = () => {
-                button.textContent = "🎤 Listening...";
+                button.textContent = "Recording...";
                 recognition.start();
             };
 
             recognition.onresult = (event) => {
                 console.log("ONRESULT", event);
-                button.textContent = "🎤 Processing...";
+                button.textContent = "Processing...";
                 const transcript = event.results[0][0].transcript;
                 promptInput.value = transcript;
                 console.log("ONRESULT");
@@ -115,7 +115,7 @@ HTML_TEMPLATE = """
                             responseContainer.innerHTML = newResponse.innerHTML;
                         } else {
                             const h2 = document.createElement('h2');
-                            h2.textContent = 'ChatGPT Response:';
+                            h2.textContent = 'Response:';
                             const div = document.createElement('div');
                             div.className = 'response';
                             div.innerHTML = newResponse.innerHTML;
@@ -123,7 +123,7 @@ HTML_TEMPLATE = """
                             document.querySelector('form').insertAdjacentElement('afterend', h2);
                         }
                     }
-                    button.textContent = "🎤 Start Talking";
+                    button.textContent = "Not Recording";
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -132,8 +132,8 @@ HTML_TEMPLATE = """
             };
 
             recognition.onend = () => {
-                button.textContent = "🎤 Start Talking";
-                button.textContent = "please work";
+                button.textContent = "Not Recording";
+                button.textContent = "Processing...";
                 console.log("ONEND");
             };
 
@@ -193,7 +193,6 @@ def trigger():
 
 @app.route("/get_response", methods=["GET"])
 def get_response():
-    # check for no value
     global response_text
     ret = jsonify({"response": response_text})
     response_text = ""
