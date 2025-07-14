@@ -15,6 +15,7 @@ Tbh this was more software than hardware. Still fun though.
 <img src="images/image1.png" alt="SMG CAD" width="400"/>
 
 # Wiring Schematic
+<img src="images/wiring diagram.png" alt="SMG Wiring Schematic" width="400"/>
 
 # Bill of Materials
 | Part                        | Quantity |
