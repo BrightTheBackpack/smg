@@ -5,3 +5,5 @@ google-genai
 python-dotenv
 logging
 gunicorn
+flask-socketio
+eventlet
