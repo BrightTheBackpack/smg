@@ -13,12 +13,12 @@
 #include <Servo.h>
 
 //wifi
-const char* ssid = "GitHub Guest";
-const char* password = "octocat11";
+const char* ssid = "laptopwifi";
+const char* password = "laptoppassword";
 
 ESP8266WebServer server(80);
 
-const char* apiUrl = "https://e-five-kappa.vercel.app/";
+const char* apiUrl = "https://localhost:5000";
 
 void handleRoot() {
   server.send(200, "text/plain", "Hello from ESP32");
