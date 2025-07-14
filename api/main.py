@@ -27,7 +27,7 @@ dictConfig({
 response_text = ""
 last_response = "No new response"
 
-model = "gemini-1.5-flash"
+model = "gemini-2.0-flash"
 
 load_dotenv()
 api_key = os.getenv("API_KEY")
@@ -201,4 +201,4 @@ def get_response():
 
 if __name__ == "__main__":
     # app.run(debug=True)
-    socketio.run(app, debug=True)
+    socketio.run(app, host='0.0.0.0', debug=True, port=5000)
