@@ -1,4 +1,5 @@
 # SMG -> S(Crappy) Meta Glasses
+### This project won top 10 at [Hack Club Undercity](https://undercity.hackclub.com)
 Have you ever been lost in a conversation? Trying to keep up with all the lingo and jargon? Shitty Meta Glasses is here to help. Packaged with John Blockchain himself, you'll find a convenient package that listens to your conversation and tells you what to say in response. Provide bullcrap answers with confidence, for you will become a 10X networker immediately.
 
 # IRL
